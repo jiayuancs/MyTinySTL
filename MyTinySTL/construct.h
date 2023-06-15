@@ -9,6 +9,8 @@
 
 #include "iterator.h"
 #include "type_traits.h"
+// 本文件使用到了mystl::forward，其定义在util.h中
+#include "util.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
