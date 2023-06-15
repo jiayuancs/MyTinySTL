@@ -1,15 +1,12 @@
 #ifndef MYTINYSTL_EXCEPTDEF_H_
 #define MYTINYSTL_EXCEPTDEF_H_
 
+#include <cassert>
 #include <stdexcept>
 
-#include <cassert>
+namespace mystl {
 
-namespace mystl
-{
-
-#define MYSTL_DEBUG(expr) \
-  assert(expr)  
+#define MYSTL_DEBUG(expr) assert(expr)
 
 #define THROW_LENGTH_ERROR_IF(expr, what) \
   if ((expr)) throw std::length_error(what)
@@ -20,7 +17,6 @@ namespace mystl
 #define THROW_RUNTIME_ERROR_IF(expr, what) \
   if ((expr)) throw std::runtime_error(what)
 
-} // namepsace mystl
+}  // namespace mystl
 
-#endif // !MYTINYSTL_EXCEPTDEF_H_
-
+#endif  // !MYTINYSTL_EXCEPTDEF_H_

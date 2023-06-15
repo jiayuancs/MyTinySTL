@@ -251,3 +251,7 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
+# vscode config file
+!.vscode
+.vscode/settings.json
