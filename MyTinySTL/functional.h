@@ -166,6 +166,8 @@ template <class Key>
 struct hash {};
 
 // 针对指针的偏特化版本
+// TODO(jiayuancs): 如果传入的是C风格的字符串，这里返回的字符串地址，与标准库不同
+// 应该读取字符串中的每个字符，得到一个hash值才对
 template <class T>
 struct hash<T*> {
   size_t operator()(T* p) const noexcept { return reinterpret_cast<size_t>(p); }

@@ -9,7 +9,7 @@
 
 #include "iterator.h"
 #include "type_traits.h"
-// 本文件使用到了mystl::forward，其定义在util.h中
+// jiayuancs: 本文件使用到了mystl::forward，但没有包含util.h文件，故添加
 #include "util.h"
 
 #ifdef _MSC_VER
