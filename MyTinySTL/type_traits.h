@@ -27,13 +27,17 @@ typedef m_bool_constant<false> m_false_type;
 // is_pair
 
 // --- forward declaration begin
+// C++ primer P250: forward declaration
+// 此时的pair是一个incomplete type
 template <class T1, class T2>
 struct pair;
 // --- forward declaration end
 
+// 主模板：表示默认情况下不是pair类型
 template <class T>
 struct is_pair : mystl::m_false_type {};
 
+// 偏特化：当传入的类型为pair<T1, T2>时，is_pair类型为m_true_type
 template <class T1, class T2>
 struct is_pair<mystl::pair<T1, T2>> : mystl::m_true_type {};
 
