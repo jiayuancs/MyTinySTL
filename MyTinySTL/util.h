@@ -18,11 +18,13 @@ typename std::remove_reference<T>::type&& move(T&& arg) noexcept {
 
 // forward
 
+// std::remove_reference<T>::type&是不推导语境，因此使用forward时必须显示指定模板类型实参
 template <class T>
 T&& forward(typename std::remove_reference<T>::type& arg) noexcept {
   return static_cast<T&&>(arg);
 }
 
+// jiayuancs: 疑问，有必要重载这个版本吗？有这种使用场景吗？
 template <class T>
 T&& forward(typename std::remove_reference<T>::type&& arg) noexcept {
   static_assert(!std::is_lvalue_reference<T>::value, "bad forward");
@@ -38,6 +40,10 @@ void swap(Tp& lhs, Tp& rhs) {
   rhs = mystl::move(tmp);
 }
 
+// comment form new bing:
+// (void)++first2用于将++first2的返回值转换为void类型，
+// 这样做是为了抑制未使用自增运算符的返回值的警告。
+// (void)强制转换告诉编译器你知道你在做什么，你真的不关心自增运算符的返回值。
 template <class ForwardIter1, class ForwardIter2>
 ForwardIter2 swap_range(ForwardIter1 first1, ForwardIter1 last1,
                         ForwardIter2 first2) {
@@ -46,6 +52,7 @@ ForwardIter2 swap_range(ForwardIter1 first1, ForwardIter1 last1,
   return first2;
 }
 
+// 交换两个数组中的元素，要求数组长度相同
 template <class Tp, size_t N>
 void swap(Tp (&a)[N], Tp (&b)[N]) {
   mystl::swap_range(a, a + N, b);
@@ -66,6 +73,7 @@ struct pair {
   second_type second;  // 保存第二个数据
 
   // default constructiable
+  // enable_if的原理见SFINAE
   template <class Other1 = Ty1, class Other2 = Ty2,
             typename = typename std::enable_if<
                 std::is_default_constructible<Other1>::value &&
@@ -74,6 +82,7 @@ struct pair {
   constexpr pair() : first(), second() {}
 
   // implicit constructiable for this type
+  // 类型能够进行拷贝构造，且能进行const U1&->Ty1,const U2&->Ty2的隐式转换
   template <
       class U1 = Ty1, class U2 = Ty2,
       typename std::enable_if<std::is_copy_constructible<U1>::value &&
@@ -84,6 +93,8 @@ struct pair {
   constexpr pair(const Ty1& a, const Ty2& b) : first(a), second(b) {}
 
   // explicit constructible for this type
+  // 类型能够进行拷贝构造，且const U1&,const
+  // U2&中至少一个类型无法隐式转换为Ty1或Ty2
   template <class U1 = Ty1, class U2 = Ty2,
             typename std::enable_if<
                 std::is_copy_constructible<U1>::value &&
@@ -166,7 +177,7 @@ struct pair {
 
   // copy assign for this pair
   pair& operator=(const pair& rhs) {
-    if (this != &rhs) {
+    if (this != &rhs) {  // 判断是否是自赋值
       first = rhs.first;
       second = rhs.second;
     }
