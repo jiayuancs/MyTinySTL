@@ -9,6 +9,8 @@ MyTinySTL
 - [x] iterator.h
 - [x] construct.h
 - [x] allocator.h
+- [x] exceptdef.h
+- [x] functional.h
 
 
 ## 简介

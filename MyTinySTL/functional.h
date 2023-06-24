@@ -58,6 +58,17 @@ struct negate : public unarg_function<T, T> {
   T operator()(const T& x) const { return -x; }
 };
 
+
+/*****************************************************************************************/
+// 证同元素
+// 定义运算op和可参与该运算的元素A，
+// 如果对任意的可参与该运算的元素X，都有A与X做op运算，结果仍为X
+// 则称A为运算op的证同元素。
+// 例如：
+// 加法的证同元素为0，因为任何数加上0仍为自己
+// 乘法的证同元素为1，因为任何元素乘以1仍为自己
+
+
 // 加法的证同元素
 template <class T>
 T identity_element(plus<T>) {
@@ -212,20 +223,25 @@ MYSTL_TRIVIAL_HASH_FCN(long long)
 
 MYSTL_TRIVIAL_HASH_FCN(unsigned long long)
 
+// jiayuancs mark: 自定义的宏使用完毕后记得取消定义
 #undef MYSTL_TRIVIAL_HASH_FCN
 
+// gcc的哈希实现见：
+// https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/hash_bytes.cc
+
 // 对于浮点数，逐位哈希
+// 这里实现的是FNV-1a哈希算法
 inline size_t bitwise_hash(const unsigned char* first, size_t count) {
 #if (_MSC_VER && _WIN64) || ((__GNUC__ || __clang__) && __SIZEOF_POINTER__ == 8)
-  const size_t fnv_offset = 14695981039346656037ull;
-  const size_t fnv_prime = 1099511628211ull;
+  const size_t fnv_offset = 14695981039346656037ull;  // 
+  const size_t fnv_prime = 1099511628211ull;  // 2^40 + 2^8 + 0xb3
 #else
   const size_t fnv_offset = 2166136261u;
-  const size_t fnv_prime = 16777619u;
+  const size_t fnv_prime = 16777619u;  // 2^24 + 2^8 + 0x93
 #endif
   size_t result = fnv_offset;
   for (size_t i = 0; i < count; ++i) {
-    result ^= (size_t)first[i];
+    result ^= (size_t)first[i];  // 对低8位进行异或
     result *= fnv_prime;
   }
   return result;
