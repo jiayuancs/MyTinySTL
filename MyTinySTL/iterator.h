@@ -20,6 +20,7 @@ struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 template <class Category, class T, class Distance = ptrdiff_t,
           class Pointer = T*, class Reference = T&>
 struct iterator {
+  // 算法依赖于迭代器，每个迭代器都必须提供这5种类型
   typedef Category iterator_category;
   typedef T value_type;
   typedef Pointer pointer;
@@ -29,6 +30,7 @@ struct iterator {
 
 // iterator traits
 
+// 判断类T中是否具有iterator_category属性
 template <class T>
 struct has_iterator_cat {
  private:
@@ -36,12 +38,21 @@ struct has_iterator_cat {
     char a;
     char b;
   };
+  // 第一个版本 接受任何数量的参数
+  // 这里使用的是省略符形参(C++ primer P199)，又称为变长形参
+  // 而不是可变参数模板(variadic template, C++ primer P618)
+  // 变长形参对于重载决议而言具有最低的优先级
   template <class U>
   static two test(...);
+  // 第二个版本 接受U::iterator_category*类型的参数
+  // 因此，如果类型U中含有iterator_category成员，
+  // 将优先调用此版本
   template <class U>
   static char test(typename U::iterator_category* = 0);
 
  public:
+  // test<T>(0)的返回类型大小是sizeof(char)，说明调用的是第二个版本的test，即T含有iterator_category成员；
+  // 反之，返回类型大小是2，即sizeof(two)，说明调用的是第一个版本的test，即T不含有iterator_category成员。
   static const bool value = sizeof(test<T>(0)) == sizeof(char);
 };
 
@@ -60,6 +71,9 @@ struct iterator_traits_impl<Iterator, true> {
 template <class Iterator, bool>
 struct iterator_traits_helper {};
 
+// 如果类型Iterator::iterator_category能够隐式转换为input_iterator_tag>
+// 或output_iterator_tag，即Iterator::iterator_category属于五种迭代器类型之一
+// 则继承偏特化版本的iterator_traits_impl<Iterator, true>
 template <class Iterator>
 struct iterator_traits_helper<Iterator, true>
     : public iterator_traits_impl<
@@ -70,6 +84,7 @@ struct iterator_traits_helper<Iterator, true>
                                   output_iterator_tag>::value> {};
 
 // 萃取迭代器的特性
+// 如果类型Iterator含有iterator_category成员，则继承偏特化版本的iterator_traits_helper<Iterator, true>,
 template <class Iterator>
 struct iterator_traits
     : public iterator_traits_helper<Iterator,
@@ -88,18 +103,20 @@ struct iterator_traits<T*> {
 template <class T>
 struct iterator_traits<const T*> {
   typedef random_access_iterator_tag iterator_category;
-  typedef T value_type;
+  typedef T value_type;  // value_type不应该是const的，因为算法会使用value_type定义局部变量
   typedef const T* pointer;
   typedef const T& reference;
   typedef ptrdiff_t difference_type;
 };
 
+// 判断迭代器T是否可隐式转换为迭代器U
 template <class T, class U, bool = has_iterator_cat<iterator_traits<T>>::value>
 struct has_iterator_cat_of
     : public m_bool_constant<std::is_convertible<
           typename iterator_traits<T>::iterator_category, U>::value> {};
 
 // 萃取某种迭代器
+// 偏特化：如果T不含有iterator_category，则为m_false_type
 template <class T, class U>
 struct has_iterator_cat_of<T, U, false> : public m_false_type {};
 
@@ -151,6 +168,8 @@ typename iterator_traits<Iterator>::value_type* value_type(const Iterator&) {
 
 // 以下函数用于计算迭代器间的距离
 
+// 下面两个distance_dispatch函数为重载版本，通过第三个参数（迭代器类型）进行区分
+
 // distance 的 input_iterator_tag 的版本
 template <class InputIterator>
 typename iterator_traits<InputIterator>::difference_type distance_dispatch(
@@ -169,6 +188,7 @@ typename iterator_traits<RandomIter>::difference_type distance_dispatch(
     RandomIter first, RandomIter last, random_access_iterator_tag) {
   return last - first;
 }
+
 
 template <class InputIterator>
 typename iterator_traits<InputIterator>::difference_type distance(
@@ -275,6 +295,9 @@ class reverse_iterator {
   }
   self operator-(difference_type n) const { return self(current + n); }
 
+  // Accesses the element located n positions away from the element currently pointed to by the iterator.
+  // *this中的*是对指针解引用，是C++中的默认行为，而不是我们重载的运算符;
+  // 最外层的*是对reverse_iterator对象解引用，调用我们重载的operator*运算符
   reference operator[](difference_type n) const { return *(*this + n); }
 };
 
