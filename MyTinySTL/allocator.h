@@ -78,6 +78,13 @@ void allocator<T>::construct(T* ptr, T&& value) {
   mystl::construct(ptr, mystl::move(value));
 }
 
+// 实际上只需要定义下面这一个construct成员函数即可
+// 上面三个都是下面这一个的特殊情况
+
+// 类模板的成员模板 (C++ primer P596)
+// 外层的template <class T>是类的类型参数
+// 内层的template <class... Args>是函数的类型参数
+// 二者不能合并
 template <class T>
 template <class... Args>
 void allocator<T>::construct(T* ptr, Args&&... args) {

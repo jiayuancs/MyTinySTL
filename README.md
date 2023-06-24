@@ -8,7 +8,7 @@ MyTinySTL
 - [x] util.h
 - [x] iterator.h
 - [x] construct.h
-- [ ] allocator.h
+- [x] allocator.h
 
 
 ## 简介
