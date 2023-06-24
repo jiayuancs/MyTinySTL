@@ -12,6 +12,7 @@
 // jiayuancs: 本文件使用到了mystl::forward，但没有包含util.h文件，故添加
 #include "util.h"
 
+// 此代码用于抑制Microsoft Visual c++编译器在编译具有未使用参数的代码时生成的警告
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4100)  // unused parameter
@@ -21,16 +22,19 @@ namespace mystl {
 
 // construct 构造对象
 
+// 默认构造
 template <class Ty>
 void construct(Ty* ptr) {
   ::new ((void*)ptr) Ty();
 }
 
+// 拷贝构造
 template <class Ty1, class Ty2>
 void construct(Ty1* ptr, const Ty2& value) {
   ::new ((void*)ptr) Ty1(value);
 }
 
+// 参数构造
 template <class Ty, class... Args>
 void construct(Ty* ptr, Args&&... args) {
   ::new ((void*)ptr) Ty(mystl::forward<Args>(args)...);
@@ -56,6 +60,8 @@ void destroy_cat(ForwardIter first, ForwardIter last, std::false_type) {
   for (; first != last; ++first) destroy(&*first);
 }
 
+// trivially: 无关紧要的
+// 如果Ty的构造函数是trivially，则没必要调用构造函数
 template <class Ty>
 void destroy(Ty* pointer) {
   destroy_one(pointer, std::is_trivially_destructible<Ty>{});
