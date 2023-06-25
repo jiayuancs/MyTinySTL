@@ -45,6 +45,8 @@ class queue {
   queue(std::initializer_list<T> ilist) : c_(ilist.begin(), ilist.end()) {}
 
   queue(const Container& c) : c_(c) {}
+
+  // std::is_nothrow_move_constructible用于判断指定类型的移动构造函数是否是noexcept的
   queue(Container&& c) noexcept(
       std::is_nothrow_move_constructible<Container>::value)
       : c_(mystl::move(c)) {}
@@ -181,6 +183,7 @@ class priority_queue {
 
   priority_queue(const Compare& c) : c_(), comp_(c) {}
 
+  // 顺序容器（array除外）可以显式地接受一个大小参数，这些元素将进行值初始化
   explicit priority_queue(size_type n) : c_(n) {
     mystl::make_heap(c_.begin(), c_.end(), comp_);
   }
@@ -204,6 +207,7 @@ class priority_queue {
     mystl::make_heap(c_.begin(), c_.end(), comp_);
   }
 
+  // TODO(jiayuancs): 疑问，这里有必要调用make_heap吗？rhs本来就是堆
   priority_queue(const priority_queue& rhs) : c_(rhs.c_), comp_(rhs.comp_) {
     mystl::make_heap(c_.begin(), c_.end(), comp_);
   }
@@ -266,8 +270,9 @@ class priority_queue {
     while (!empty()) pop();
   }
 
-  void swap(priority_queue& rhs) noexcept(noexcept(
-      mystl::swap(c_, rhs.c_)) && noexcept(mystl::swap(comp_, rhs.comp_))) {
+  // jiayauncs mark: 这里使用了noexcept运算符，详见C++ primer P691
+  // 外层的一个noexcept是说明符，内层的两个noexcept是运算符
+  void swap(priority_queue& rhs) noexcept(noexcept(mystl::swap(c_, rhs.c_)) && noexcept(mystl::swap(comp_, rhs.comp_))) {
     mystl::swap(c_, rhs.c_);
     mystl::swap(comp_, rhs.comp_);
   }

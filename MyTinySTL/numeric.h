@@ -12,7 +12,7 @@ namespace mystl {
 // 版本1：以初值 init 对每个元素进行累加
 // 版本2：以初值 init 对每个元素进行二元操作
 /*****************************************************************************************/
-// 版本1
+// 版本1：计算前缀和
 template <class InputIter, class T>
 T accumulate(InputIter first, InputIter last, T init) {
   for (; first != last; ++first) {
@@ -35,7 +35,7 @@ T accumulate(InputIter first, InputIter last, T init, BinaryOp binary_op) {
 // 版本1：计算相邻元素的差值，结果保存到以 result 为起始的区间上
 // 版本2：自定义相邻元素的二元操作
 /*****************************************************************************************/
-// 版本1
+// 版本1：计算差分数组
 template <class InputIter, class OutputIter>
 OutputIter adjacent_difference(InputIter first, InputIter last,
                                OutputIter result) {
@@ -105,7 +105,7 @@ void iota(ForwardIter first, ForwardIter last, T value) {
 
 /*****************************************************************************************/
 // partial_sum
-// 版本1：计算局部累计求和，结果保存到以 result 为起始的区间上
+// 版本1：计算局部累计求和，结果保存到以 result 为起始的区间上（局部前缀和数组）
 // 版本2：进行局部进行自定义二元操作
 /*****************************************************************************************/
 template <class InputIter, class OutputIter>

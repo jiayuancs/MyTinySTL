@@ -19,4 +19,9 @@ set(THIRD_PARTY_GTEST ${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest)
 # 测试程序生成路径
 set(TEST_EXE_PATH ${CMAKE_BINARY_DIR}/bin)
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/mytest)
+# 构建mygtest目录下的测试代码
+# 由于gtest与MyTinySTL有冲突，链接时报错，因此不再使用
+# add_subdirectory(${PROJECT_SOURCE_DIR}/mygtest)
+
+# 构建singletest目录下的测试代码
+add_subdirectory(${PROJECT_SOURCE_DIR}/singletest)

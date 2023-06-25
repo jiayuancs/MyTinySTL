@@ -144,7 +144,7 @@ OutputIter set_difference(InputIter1 first1, InputIter1 last1,
 
 /*****************************************************************************************/
 // set_symmetric_difference
-// 计算 (S1-S2)∪(S2-S1) 的结果并保存到 result
+// 计算 (S1-S2)∪(S2-S1) 的结果并保存到 result, 即集合的对称差集
 // 中，返回一个迭代器指向输出结果的尾部
 /*****************************************************************************************/
 template <class InputIter1, class InputIter2, class OutputIter>

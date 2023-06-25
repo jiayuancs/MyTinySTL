@@ -74,6 +74,8 @@ OutputIter unchecked_copy_cat(InputIter first, InputIter last,
 }
 
 // ramdom_access_iterator_tag 版本
+// 随机访问迭代器可以直接确定要拷贝的元素个数，因此在for循环中可不用判断两个迭代器是否相等，
+// 效率更高
 template <class RandomIter, class OutputIter>
 OutputIter unchecked_copy_cat(RandomIter first, RandomIter last,
                               OutputIter result,
@@ -90,6 +92,7 @@ OutputIter unchecked_copy(InputIter first, InputIter last, OutputIter result) {
 }
 
 // 为 trivially_copy_assignable 类型提供特化版本
+// 如果拷贝赋值运算符是trivially，那么就可以直接拷贝底层数据，而不用一个个地调用拷贝赋值运算符
 template <class Tp, class Up>
 typename std::enable_if<
     std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
@@ -335,6 +338,7 @@ OutputIter unchecked_fill_n(OutputIter first, Size n, const T& value) {
 }
 
 // 为 one-byte 类型提供特化版本
+// TODO(jiayuancs): 疑问，为什么要排除bool类型呢??
 template <class Tp, class Size, class Up>
 typename std::enable_if<std::is_integral<Tp>::value && sizeof(Tp) == 1 &&
                             !std::is_same<Tp, bool>::value &&
