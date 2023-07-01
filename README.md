@@ -16,10 +16,10 @@ MyTinySTL
 - [x] set_algo.h
 - [x] heap_algo.h
 - [x] queue.h
-- [ ] uninitialized.h
-- [ ] memory.h
+- [x] uninitialized.h
+- [x] memory.h
 - [ ] algo.h
-- [ ] algorithm.h
+- [x] algorithm.h
 
 
 ## 简介

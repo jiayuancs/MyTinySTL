@@ -1,5 +1,5 @@
-#include "vector.h"
-#include "heap_algo.h"
+#include "../MyTinySTL/vector.h"
+#include "../MyTinySTL/heap_algo.h"
 
 #include <iostream>
 #include <algorithm>

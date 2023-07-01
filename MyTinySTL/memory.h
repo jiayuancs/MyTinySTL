@@ -35,6 +35,9 @@ pair<T*, ptrdiff_t> get_buffer_helper(ptrdiff_t len, T*) {
   return pair<T*, ptrdiff_t>(nullptr, 0);
 }
 
+// jiayuancs: 这个函数参数并没有与T相关的类型，因此编译器无法推断出类型T
+// 需要我们显示指定模板类型实参，例如：
+// get_temporary_buffer<int>(ptrdiff_t(10));
 template <class T>
 pair<T*, ptrdiff_t> get_temporary_buffer(ptrdiff_t len) {
   return get_buffer_helper(len, static_cast<T*>(0));
@@ -120,6 +123,7 @@ void temporary_buffer<ForwardIterator, T>::allocate_buffer() {
 // --------------------------------------------------------------------------------------
 // 模板类: auto_ptr
 // 一个具有严格对象所有权的小型智能指针
+// 在C++17中被移除，建议使用unique_ptr代替
 template <class T>
 class auto_ptr {
  public:

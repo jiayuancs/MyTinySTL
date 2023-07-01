@@ -14,13 +14,19 @@ namespace mystl {
 /*****************************************************************************************/
 // uninitialized_copy
 // 把 [first, last) 上的内容复制到以 result 为起始处的空间，返回复制结束的位置
+// 
+// uninitialized_copy与copy的区别：
+// 1. uninitialized_copy假定目标范围是未初始化的内存；
+// 2. copy假定目标范围已经用构造函数初始化；
 /*****************************************************************************************/
+// 对于拷贝赋值运算符是trivially的，直接调用copy即可
 template <class InputIter, class ForwardIter>
 ForwardIter unchecked_uninit_copy(InputIter first, InputIter last,
                                   ForwardIter result, std::true_type) {
   return mystl::copy(first, last, result);
 }
 
+// 对于非trivially的，则通过调用拷贝构造函数构造对象
 template <class InputIter, class ForwardIter>
 ForwardIter unchecked_uninit_copy(InputIter first, InputIter last,
                                   ForwardIter result, std::false_type) {
@@ -29,7 +35,7 @@ ForwardIter unchecked_uninit_copy(InputIter first, InputIter last,
     for (; first != last; ++first, ++cur) {
       mystl::construct(&*cur, *first);
     }
-  } catch (...) {
+  } catch (...) {  // 如果构造失败，则销毁之前构造的对象
     for (; result != cur; --cur) mystl::destroy(&*cur);
   }
   return cur;
@@ -38,6 +44,8 @@ ForwardIter unchecked_uninit_copy(InputIter first, InputIter last,
 template <class InputIter, class ForwardIter>
 ForwardIter uninitialized_copy(InputIter first, InputIter last,
                                ForwardIter result) {
+  // is_trivially_copy_assignable得到的是一个true_type或false_type类型
+  // 这里使用{}得到一个匿名对象，以传给函数
   return mystl::unchecked_uninit_copy(
       first, last, result,
       std::is_trivially_copy_assignable<
@@ -184,6 +192,8 @@ ForwardIter unchecked_uninit_move_n(InputIter first, Size n, ForwardIter result,
   return mystl::move(first, first + n, result);
 }
 
+// TODO(jiayuancs): 疑问，为什么这个函数在catch中药再次抛出异常？？？
+// 为什么unchecked_uninit_move不用再次抛出异常？？
 template <class InputIter, class Size, class ForwardIter>
 ForwardIter unchecked_uninit_move_n(InputIter first, Size n, ForwardIter result,
                                     std::false_type) {
